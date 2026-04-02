@@ -1,5 +1,6 @@
-const ONESIGNAL_APP_ID = 'envdk55e-qjgl-lkaq-rwwm-yats76s7x7ah';
-const ONESIGNAL_REST_KEY = 'os_v2_app_envdk55eqjgllkaqrwwmyats76s7x7aha5tu77mhcg5ooap2ekc4bchfax2o3j5gt22bqdf42o2finfynajgomgfcu7wc5jgvpgisja';
+// App ID is public (used client-side), REST key must stay in env vars only
+const ONESIGNAL_APP_ID = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID || '';
+const ONESIGNAL_REST_KEY = process.env.ONESIGNAL_REST_KEY || '';
 
 // Initialize OneSignal on client side
 export async function initOneSignal(playerUid: string, username: string) {

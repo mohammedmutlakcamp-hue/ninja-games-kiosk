@@ -1,0 +1,23 @@
+node_modules/
+.next/
+out/
+.env
+.env.local
+*.tsbuildinfo
+kiosk/node_modules/
+kiosk/dist/
+scanner/detected_games.json
+firebase-service-account.json
+
+# C# / .NET
+bin/
+obj/
+output/
+publish/
+*.user
+*.suo
+.vs/
+*.exe
+*.dll
+*.pdb
+WebView2Data/

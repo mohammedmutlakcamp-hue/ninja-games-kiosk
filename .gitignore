@@ -1,6 +1,44 @@
+# Dependencies
 node_modules/
+server/node_modules/
+
+# Next.js build
+server/.next/
 .next/
+
+# Environment files
 .env.local
 .env
+server/.env.local
+server/.env
+
+# Logs
 *.log
-kiosk/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# .NET build artifacts
+kiosk-source/NinjaKiosk/bin/
+kiosk-source/NinjaKiosk/obj/
+kiosk-source/.vs/
+
+# Client runtime (326MB compiled .NET app — rebuild from kiosk-source/ instead)
+client/
+
+# Old kiosk folder
+server/kiosk/
+
+# Sharp native binaries (generated on install)
+server/node_modules/
+
+# Gemini
+.gemini/

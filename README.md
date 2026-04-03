@@ -1,61 +1,35 @@
-# NinjaKiosk
+# NinjaKiosk - Gaming Center Kiosk System
 
-Native C# WPF + WebView2 kiosk application for Ninja Games gaming center. Replaces the Windows shell to lock down PCs for customer sessions.
+Complete LAN-based kiosk system for Ninja Games gaming center.
 
-## Project Structure
+## Quick Start
 
-| File / Folder | Description |
-|---|---|
-| `NinjaKiosk/` | Main C# WPF project |
-| `NinjaKiosk/MainWindow.xaml` | Kiosk window layout — fullscreen borderless window with WebView2 and a loading overlay |
-| `NinjaKiosk/MainWindow.xaml.cs` | Core kiosk logic — keyboard hooks, session lock/unlock, game launching, taskbar control, WebView2 bridge |
-| `NinjaKiosk/App.xaml.cs` | App startup — single-instance mutex, crash logging |
-| `NinjaKiosk/NinjaKiosk.csproj` | .NET 8.0 project file with WebView2 dependency |
-| `NinjaKiosk/app.manifest` | Windows manifest (runs as current user, not admin) |
-| `NinjaKiosk/AssemblyInfo.cs` | Assembly metadata |
-| `installer.iss` | Inno Setup installer script — builds `NinjaKiosk-Setup.exe`, sets kiosk as Windows shell |
-| `restore-shell.bat` | Restores `explorer.exe` as the default Windows shell (undo kiosk mode) |
+### Server PC (hosts the kiosk web UI)
+1. Run `NinjaKiosk-LAN-Setup.bat` as admin (one-time firewall setup)
+2. Run `server\START-LAN-SERVER.bat` to start the web server on port 3000
 
-## How It Works
-
-1. **Shell Replacement** — The installer sets `NinjaKiosk.exe` as the Windows shell (via registry), so it launches instead of Explorer on boot.
-2. **Lock Mode** (default on startup) — Fullscreen, topmost, hides taskbar, blocks Alt+Tab / Win key / Alt+F4. Shows the kiosk web UI from `ninjagamesjo.com/kiosk`.
-3. **Unlock Mode** (customer session) — Taskbar shown, Alt+Tab allowed, kiosk pushed behind other windows so customers can use the PC normally.
-4. **Session Logout** — Kills all processes started during the session, re-locks the kiosk.
-5. **Game Launch** — Supports Steam, Epic Games, Riot (Valorant/LoL), Roblox, Battle.net, FiveM, and direct `.exe` launch.
-
-## Web Bridge API
-
-The web UI at `ninjagamesjo.com/kiosk` communicates with the kiosk via `window.electronAPI`:
-
-| Method | Action |
-|---|---|
-| `sessionLogin()` | Unlock PC for customer |
-| `sessionLogout()` | Lock PC, kill session processes |
-| `launchGame(gameId, exePath)` | Launch a game |
-| `returnToKiosk()` | Bring kiosk window to front |
-| `lockPC()` / `unlockPC()` | Manual lock/unlock |
-| `restartPC()` / `shutdownPC()` | Restart or shut down the PC |
-| `killSwitch()` | Exit kiosk entirely |
-
-## Exit / Admin Access
-
-- Type `ghanimexit` on the keyboard at any time to exit the kiosk and restore Explorer.
-- Run `restore-shell.bat` as admin to permanently restore Explorer as the default shell.
-
-## Build
-
-```bash
-# Build
-dotnet publish NinjaKiosk/NinjaKiosk.csproj -c Release -r win-x64 --self-contained false
-
-# Build installer (requires Inno Setup)
-"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
-```
+### Client PCs (gaming stations)
+1. Run `NinjaKiosk-Client-Setup.bat` as admin (one-time firewall setup)
+2. Run `client\NinjaKiosk.exe` or `START-KIOSK.bat`
+3. The kiosk auto-detects the LAN server
 
 ## Requirements
-
 - Windows 10/11
-- .NET 8.0 Runtime
+- Node.js (for server PC) — download from https://nodejs.org
 - WebView2 Runtime (usually pre-installed on Windows 10/11)
-- Inno Setup 6 (for building the installer)
+
+## First Time Setup (Server)
+```bash
+cd server
+npm install
+npm run build
+npm start
+```
+
+## Folder Structure
+- `server/` — Next.js web server (kiosk UI, admin panel, API)
+- `client/` — Compiled kiosk app (NinjaKiosk.exe)
+- `kiosk-source/` — C# source code for the kiosk client
+
+## Exit Kiosk
+Type `ghanemexit` on the keyboard at any time.

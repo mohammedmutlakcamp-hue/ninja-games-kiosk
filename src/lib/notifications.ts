@@ -1,8 +1,5 @@
-import { db } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
-
-const ONESIGNAL_APP_ID = '236a3577-a482-4cb5-a810-8daccc0272ff';
-const ONESIGNAL_REST_API_KEY = 'os_v2_app_envdk55eqjgllkaqrwwmyats777pnct77ohuspu73h3342k4skjrqmje7prwekzdyh2gsywd6nsmp2w5uif2rbuyczr56xlzzcx32ay';
+const ONESIGNAL_APP_ID = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID || '';
+const ONESIGNAL_REST_API_KEY = process.env.ONESIGNAL_REST_KEY || '';
 
 /**
  * Notify a player's friends that they started playing a game.
@@ -13,15 +10,14 @@ export async function notifyFriendsGameStart(
   game: { name: string; id: string },
 ) {
   const friendIds = player.friends || [];
-  if (friendIds.length === 0) return;
+  if (friendIds.length === 0 || !ONESIGNAL_APP_ID) return;
 
   try {
-    // Send via OneSignal using external_id (player UIDs)
-    const response = await fetch('https://onesignal.com/api/v1/notifications', {
+    const response = await fetch('https://api.onesignal.com/notifications', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${ONESIGNAL_REST_API_KEY}`,
+        'Authorization': `Key ${ONESIGNAL_REST_API_KEY}`,
       },
       body: JSON.stringify({
         app_id: ONESIGNAL_APP_ID,
@@ -29,7 +25,7 @@ export async function notifyFriendsGameStart(
           external_id: friendIds,
         },
         target_channel: 'push',
-        headings: { en: '🎮 Friend Activity' },
+        headings: { en: 'Friend Playing! 🎮' },
         contents: { en: `${player.username} is playing ${game.name}!` },
         data: {
           type: 'friend_playing',
@@ -38,10 +34,7 @@ export async function notifyFriendsGameStart(
           gameId: game.id,
           gameName: game.name,
         },
-        // iOS specific
-        ios_sound: 'default',
-        // Android specific
-        android_channel_id: 'friend_activity',
+        chrome_web_icon: 'https://www.ninjagamesjo.com/img/icon-192.png',
       }),
     });
 

@@ -2,31 +2,66 @@
 const ONESIGNAL_APP_ID = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID || '';
 const ONESIGNAL_REST_KEY = process.env.ONESIGNAL_REST_KEY || '';
 
-// Initialize OneSignal on client side
+// Initialize OneSignal on client side — auto-prompts for notification permission
 export async function initOneSignal(playerUid: string, username: string) {
   if (typeof window === 'undefined') return;
+  if (!ONESIGNAL_APP_ID) {
+    console.warn('OneSignal App ID not configured');
+    return;
+  }
 
-  const OneSignal = (window as any).OneSignalDeferred || [];
-  (window as any).OneSignalDeferred = OneSignal;
+  // Wait for OneSignal SDK to load
+  await new Promise<void>((resolve) => {
+    if ((window as any).OneSignal) { resolve(); return; }
+    const check = setInterval(() => {
+      if ((window as any).OneSignal) { clearInterval(check); resolve(); }
+    }, 100);
+    // Timeout after 10s
+    setTimeout(() => { clearInterval(check); resolve(); }, 10000);
+  });
 
-  OneSignal.push(async function (os: any) {
-    await os.init({
+  const OneSignal = (window as any).OneSignal;
+  if (!OneSignal) return;
+
+  try {
+    await OneSignal.init({
       appId: ONESIGNAL_APP_ID,
       serviceWorkerParam: { scope: '/' },
       serviceWorkerPath: '/OneSignalSDKWorker.js',
       notifyButton: { enable: false },
       allowLocalhostAsSecureOrigin: true,
+      promptOptions: {
+        slidedown: {
+          prompts: [{
+            type: 'push',
+            autoPrompt: true,
+            text: {
+              actionMessage: 'Get notified when friends come online, receive tokens, and more!',
+              acceptButton: 'Allow',
+              cancelButton: 'Later',
+            },
+          }],
+        },
+      },
     });
 
     // Set external user ID for targeted notifications
-    await os.login(playerUid);
+    await OneSignal.login(playerUid);
 
     // Add tags for filtering
-    await os.User.addTags({
+    await OneSignal.User.addTags({
       username: username,
       uid: playerUid,
     });
-  });
+
+    // Auto-request permission (shows native prompt on iOS 16.4+)
+    const permission = await OneSignal.Notifications.permission;
+    if (!permission) {
+      await OneSignal.Notifications.requestPermission();
+    }
+  } catch (err) {
+    console.error('OneSignal init error:', err);
+  }
 }
 
 // Send notification via REST API (server-side or from admin)
@@ -65,11 +100,12 @@ export async function sendNotification(params: {
   return res.json();
 }
 
-// Notification helper functions
+// ─── Notification helpers ────────────────────────────────────
+
 export async function notifyFriendOnline(friendUids: string[], username: string) {
   if (friendUids.length === 0) return;
   return sendNotification({
-    title: 'Friend Online!',
+    title: 'Friend Online! 🟢',
     message: `${username} just came online at Ninja Games`,
     targetUids: friendUids,
     data: { type: 'friend_online', username },
@@ -78,7 +114,7 @@ export async function notifyFriendOnline(friendUids: string[], username: string)
 
 export async function notifyCoinsReceived(targetUid: string, senderName: string, amount: number) {
   return sendNotification({
-    title: 'Tokens Received!',
+    title: 'Tokens Received! 🪙',
     message: `${senderName} sent you ${amount} tokens`,
     targetUids: [targetUid],
     data: { type: 'coins_received', sender: senderName, amount: String(amount) },
@@ -87,16 +123,26 @@ export async function notifyCoinsReceived(targetUid: string, senderName: string,
 
 export async function notifyChestReceived(targetUid: string, senderName: string, chestName: string) {
   return sendNotification({
-    title: 'Gift Received!',
+    title: 'Gift Received! 🎁',
     message: `${senderName} sent you a ${chestName}`,
     targetUids: [targetUid],
     data: { type: 'chest_received', sender: senderName, chest: chestName },
   });
 }
 
+export async function notifyFriendPlaying(friendUids: string[], username: string, gameName: string) {
+  if (friendUids.length === 0) return;
+  return sendNotification({
+    title: 'Friend Playing! 🎮',
+    message: `${username} is playing ${gameName}`,
+    targetUids: friendUids,
+    data: { type: 'friend_playing', username, game: gameName },
+  });
+}
+
 export async function notifyDailyTasksReset() {
   return sendNotification({
-    title: 'Daily Tasks Reset!',
+    title: 'Daily Tasks Reset! ⚡',
     message: 'New daily tasks are available. Come claim your rewards!',
     data: { type: 'daily_tasks_reset' },
   });

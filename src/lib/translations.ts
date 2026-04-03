@@ -41,6 +41,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'coins': 'tokens',
     'click_to_skip': 'Click anywhere to skip',
     // Sidebar
+    'home_tab': 'Home',
     'games': 'Games',
     'mini_games': 'Mini Games',
     'tournaments': 'Tournaments',
@@ -276,6 +277,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'coins': '\u062A\u0648\u0643\u0646\u0632',
     'click_to_skip': '\u0627\u0646\u0642\u0631 \u0644\u0644\u062A\u062E\u0637\u064A',
     // Sidebar
+    'home_tab': '\u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629',
     'games': '\u0627\u0644\u0623\u0644\u0639\u0627\u0628',
     'mini_games': '\u0623\u0644\u0639\u0627\u0628 \u0645\u0635\u063A\u0631\u0629',
     'tournaments': '\u0627\u0644\u0628\u0637\u0648\u0644\u0627\u062A',

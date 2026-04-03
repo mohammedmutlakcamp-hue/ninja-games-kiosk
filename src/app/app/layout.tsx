@@ -8,10 +8,21 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'Ninja Games',
+    startupImage: [
+      { url: '/img/icon-512.png' },
+    ],
   },
   icons: {
-    icon: '/img/icon-192.png',
-    apple: '/img/icon-192.png',
+    icon: [
+      { url: '/img/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/img/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/img/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
   },
 };
 

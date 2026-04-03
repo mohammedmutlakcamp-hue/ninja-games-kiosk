@@ -8,7 +8,7 @@ import { COINS_PER_MINUTE } from '@/lib/constants';
 import { calculateTotalXP, getLevelInfo } from '@/lib/xp';
 import { Lang, t } from '@/lib/translations';
 import Image from 'next/image';
-import { Coins, Trophy, Package, User, ClipboardCheck, Users, LogOut, Timer, Gift, Star, Play, Send, Loader2, X, ChevronRight } from 'lucide-react';
+import { Coins, Trophy, Package, User, ClipboardCheck, Users, LogOut, Timer, Gift, Star, Play, Send, Loader2, X, ChevronRight, Home } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────
 type Tab = 'home' | 'chests' | 'friends' | 'tasks' | 'profile';
@@ -243,7 +243,7 @@ export function MobileDashboard({ player, lang, onLogout }: Props) {
   //  TABS CONFIG
   // ═══════════════════════════════════════════════════════════
   const tabs: { id: Tab; icon: typeof Coins; label: string }[] = [
-    { id: 'home',    icon: Play,           label: t(lang, 'games') || 'Home' },
+    { id: 'home',    icon: Home,           label: t(lang, 'home_tab') || 'Home' },
     { id: 'chests',  icon: Package,        label: t(lang, 'chests') || 'Chests' },
     { id: 'friends', icon: Users,          label: t(lang, 'friends') || 'Friends' },
     { id: 'tasks',   icon: ClipboardCheck, label: t(lang, 'daily_tasks') || 'Tasks' },
@@ -837,7 +837,8 @@ export function MobileDashboard({ player, lang, onLogout }: Props) {
   return (
     <div className="min-h-[100dvh] bg-[#0a0a0a] flex flex-col relative">
       {/* ─── Top header ──────────────────────────────────── */}
-      <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5">
+      <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#0a0a0a]/80 backdrop-blur-2xl border-b border-white/[0.06]"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}>
         <div className="flex items-center gap-2.5">
           <div
             className="w-8 h-8 rounded-full overflow-hidden border"
@@ -858,7 +859,7 @@ export function MobileDashboard({ player, lang, onLogout }: Props) {
       </header>
 
       {/* ─── Scrollable content area ─────────────────────── */}
-      <main className="flex-1 overflow-y-auto" style={{ height: 'calc(100dvh - 60px - 52px)' }}>
+      <main className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' } as any}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -874,8 +875,8 @@ export function MobileDashboard({ player, lang, onLogout }: Props) {
 
       {/* ─── Bottom tab bar ──────────────────────────────── */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 h-[60px] flex items-center justify-around bg-[#0a0a0a]/70 backdrop-blur-xl border-t border-white/5"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around bg-[#0a0a0a]/80 backdrop-blur-2xl border-t border-white/[0.06]"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)', height: 'calc(60px + env(safe-area-inset-bottom, 0px))' }}
       >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
